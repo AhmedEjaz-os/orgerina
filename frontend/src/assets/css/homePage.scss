@@ -1,0 +1,171 @@
+@keyframes ShutterAnimation{
+    0%{
+        transform: translateY(-110%);
+    }
+    25%{
+        transform: translateY(0%);
+    }
+    50%{
+        transform: translateY(-10%);
+    }
+    100%{
+        transform: translateY(0%);
+    }
+}
+@keyframes ShutterAnimationBackToTop{
+    0%{
+        transform: translateY(100%);
+    }
+    25%{
+        transform: translateY(0%);
+    }
+    50%{
+        transform: translateY(10%);
+    }
+    100%{
+        transform: translateY(0%);
+    }
+}
+@mixin HomePageSectionOneButtons{
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid black;
+    transition: 0.2s all ease-in-out;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    color: white;
+    &::before{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: white;
+        transform: translateX(-120%);
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        transition: 0.2s all ease-in-out;
+    }
+    &:hover{
+        color: black;
+        &::before{
+            animation-name: ShutterAnimation;
+            animation-duration: 2s;
+            animation-fill-mode: forwards;
+        }
+    }
+}
+@mixin homePageHeading {
+    font-family: "destructobeam-bb", sans-serif;
+    font-weight: bold;
+    line-height: 0.7px;
+}
+@mixin homePageDescription {
+    font-family: "mandroid-bb", sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+}
+.homePage{
+    background: linear-gradient(130deg, #9921e8 0%, #163fb9 74%, #9921e8 100% );
+    box-shadow: 1px 1px 30px rgba(2,119,189 ,1);
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    // Section 1 Styling
+    .section1{
+        background-image: url("../../../public/assets/images/homePage/section1.jpg");
+        height: 100vh;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-size: cover;
+        div{
+            width: 100%;
+            margin: 0 auto;
+            a{
+                @include HomePageSectionOneButtons;
+            }
+        }
+    }
+    // Section 2 Styling
+    .SectionTwoOrganizer{
+        height: 100vh;
+        h3{
+            @include homePageHeading;
+        }
+        p{
+            @include homePageDescription;
+        }
+    }
+    // Section 3 Styling
+    .section3{
+        background-image: url("../../../public/assets/images/homePage/section3.jpg");
+        height: 100vh;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    // Section 5 Styling
+    .section5{
+        background-image: url("../../../public/assets/images/homePage/section5.jpg");
+        height: 100vh;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    // Section 7 Styling
+    .section7{
+       position: absolute;
+       z-index: 2;
+       bottom: 20px;
+       right: 20px;
+        a{
+            border-radius: 50%;
+            border: 1px solid black;
+            transition: 0.2s all ease-in-out;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            height: 80px;
+            width: 80px;
+            text-align: center;
+            color: white;
+            svg{
+                font-size: 54px;
+            }
+            &::before{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: white;
+                transform: translateX(-100%);
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                transition: 0.2s all ease-in-out;
+            }
+            &:hover{
+                color: black;
+
+                &::before{
+                    animation-name: ShutterAnimationBackToTop;
+                    animation-duration: 2s;
+                    animation-fill-mode: forwards;
+                }
+            }
+        }
+    }
+}
+
+.signIn{
+    .button{
+        @include HomePageSectionOneButtons;
+        background-color: #000;
+        width: fit-content;
+    }
+}

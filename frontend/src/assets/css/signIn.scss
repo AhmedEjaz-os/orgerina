@@ -1,0 +1,36 @@
+.signIn{
+    height: 100vh;
+    &-left{
+        height: 100vh;
+        img{
+            height: 100vh;
+            object-fit: cover;
+        }
+    }
+    &-right{
+        height: 100vh;
+        .MuiFormLabel-root{
+            top: unset !important;
+        }
+        .passwordInput{
+            position: relative;
+            div{
+                width: 100%;
+            }
+            .togglePassword{
+                position: absolute;
+                top: 10px;
+                right: 18px;
+            }
+            .passwordError, .passwordCorrection{
+                top: 18px;
+            }
+        }
+    }
+    
+}
+.register{
+    .MuiSelect-select {
+        padding: 0rem !important;
+    }
+}
