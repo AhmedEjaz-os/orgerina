@@ -33,4 +33,16 @@
     .MuiSelect-select {
         padding: 0rem !important;
     }
+    .badge{
+        position: relative;
+        padding-left: 3em;
+        text-wrap: wrap;
+        text-align: start;
+        line-height: 1.5;
+        .errorIcon{
+            position: absolute;
+            top: 0;
+            left: 10px;
+        }
+    }
 }

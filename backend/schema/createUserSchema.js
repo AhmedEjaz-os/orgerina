@@ -10,11 +10,15 @@ const createUserModel = new Schema({
         type: Boolean,
         default: false,
     },
-    password: { type: String, required: true  },
+    __password: { type: String, required: true  },
     neech: {
         type: String,
         required: true,
     },
+    __access_token: {
+        type: String,
+        required: true
+    }
 });
 
 const model = mongoose.model("createuser", createUserModel);

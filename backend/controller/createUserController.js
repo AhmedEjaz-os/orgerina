@@ -1,7 +1,7 @@
 const model = require('../schema/createUserSchema.js')
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
 
 const {
     CreateUserValidationSchema
@@ -29,6 +29,10 @@ const encyptPassword = (password) => {
     return hash;
 }
 
+const createJsonWebToken = (user) => {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+}
+
 const createUser = async(req, res) => {
     const {name, email, password, neech} = req.body;
     let result;
@@ -36,28 +40,36 @@ const createUser = async(req, res) => {
         result = await CreateUserValidationSchema.validateAsync(req.body);
     }
     catch(e) {
-        res.json(e.details[0].message);
+        res.status(401).json(e.details[0].message);
     }
     if(result){
         const __encyptedPassword = await encyptPassword(password);
+        const token = createJsonWebToken(req.body);
         var createUser = new model(
             {
                 name,
                 email,
-                password: __encyptedPassword,
-                neech
+                __password: __encyptedPassword,
+                neech,
+                __access_token: token
             }
         );
         await createUser.save()
-        .then((data) => {res.json(data)})
+        .then((data) => {
+                res.cookie("ACCESS_TOKEN", token, {
+                    maxAge: 86400000,
+                    secure: false,
+                })
+                res.json(data);
+            })
         .catch(e => {
             if(String(e).includes("password` is required")){
-                res.json({
+                res.status(401).json({
                     error: "Password is required"
                 })
             }
             else {
-                res.json({
+                res.status(401).json({
                     error: "Email already exist",
                 })
             }

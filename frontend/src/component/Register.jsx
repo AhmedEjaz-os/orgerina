@@ -5,12 +5,15 @@ import axios from 'axios';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { Navigate } from "react-router-dom";
 import '../assets/css/signIn.scss';
 import '../assets/css/homePage.scss';
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [checkIfPasswordMatches, setIfPasswordMatches] = useState(false);
+  const [error, setError] = useState('');
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   let password, confirmPassword
   const handleMouseDownPassword = (event) => {
@@ -24,12 +27,23 @@ function Register() {
       password: e.target[2].value,
       neech: e.target[5].value
     }
-    axios.post('http://localhost:5000/signIn/createUser', payload)
+    axios.post('http://localhost:5000/signIn/createUser', payload, {
+      withCredentials: true
+    })
     .then((response) => {
-      console.log(response);
+      setError('');
+      if(response.data.neech === 'Organizer'){
+        <Navigate to="/dashboard/organizer" replace={true} />
+      }
+      else if(response.data.neech === 'Arena Owner'){
+        <Navigate to="/dashboard/owner" replace={true} />
+      }
+      else if(response.data.neech === "Participant"){
+        <Navigate to="/dashboard/participant" replace={true} />
+      }
     })
     .catch((err) => {
-      console.log(err);
+      setError(err.response.data.error ? err.response.data.error : err.response.data.includes('"password" with value "password" fails to match the required pattern') ? "password must contain 8 characters, 1 uppercase, 1 lowercase, 1 special character ,and 1 number": err.response.data);
     });
   }
 
@@ -65,6 +79,10 @@ function Register() {
         </div>
         <div className='w-50 signIn-right ms-5 d-flex justify-content-center flex-column pe-5'>
             <h2>REGISTER ACCOUNT</h2>
+            <div className={error ? 'd-block badge bg-danger p-3 text-white text-uppercase' : 'd-none'}>
+              {error}
+              <ErrorOutlineIcon className={error ? "errorIcon h-100 pl-3 d-block" : "d-none"} />
+            </div>
             <form onSubmit={handleRegisterUser}>
               <input type="text" className="form-control mt-3 p-3" id="exampleFormControlInput1" placeholder="NAME" />
               <input type="email" className="form-control mt-3 p-3" id="exampleFormControlInput2" placeholder="EMAIL" />
@@ -87,10 +105,9 @@ function Register() {
               </div>
               <div className='passwordInput '>
                 <select className="form-control mt-3 p-3" id="exampleFormControlSelect5" >
-                  <option>ORGANIZER</option>
+                  <option>Organizer</option>
                   <option>Arena Owner</option>
                   <option>Participant</option>
-                  <option>Other</option>
                 </select>
                 <ArrowDropDownIcon className='togglePassword passwordError' />
               </div>
@@ -101,6 +118,7 @@ function Register() {
                   <button className='button mt-3 me-3' type='submit' title="Make Sure all the fields are filled!" disabled>Create Account</button>
                 }
               </div>
+              
             </form>
         </div>  
     </div>
