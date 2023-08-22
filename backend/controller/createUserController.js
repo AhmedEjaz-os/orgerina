@@ -84,13 +84,18 @@ const signInUser = async(req, res) => {
     })
     .then((data) => { return data; });
     if(documentFromDb){
-        await bcrypt.compare(password, documentFromDb.password, (err, resp) => {
+        await bcrypt.compare(password, documentFromDb.__password, (err, resp) => {
             if(!resp){
                 res.status(401).json({
                     error: "Email or Password does not match"
                 })
             }
             if(resp){
+                const token = createJsonWebToken({name: documentFromDb.name, email: documentFromDb.email, password: documentFromDb.password, neech: documentFromDb.neech});
+                res.cookie("ACCESS_TOKEN", token, {
+                    maxAge: 86400000,
+                    secure: false,
+                })
                 res.status(200).json({
                     documentFromDb,
                     message: "User is signed in..."
@@ -100,7 +105,7 @@ const signInUser = async(req, res) => {
     }
     else{
         res.status(401).json({
-            error: "Email or Password does not match"
+            error: "Email or Password does not match !!! Password Not Matched !!!"
         })
     }
 }

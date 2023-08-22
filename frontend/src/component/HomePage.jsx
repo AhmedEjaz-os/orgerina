@@ -1,10 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import "../assets/css/homePage.scss";
 import SectionOneHomePage from '../subComponent/homePage/SectionOneHomePage';
 import SectionTwo from '../subComponent/homePage/SectionTwo';
 import VerticalAlignTopTwoToneIcon from '@mui/icons-material/VerticalAlignTopTwoTone';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function HomePage() {
+  const navigate = useNavigate();
+  const localStorageItems = JSON.parse(localStorage.getItem('userLoginTrack'));
+  const cookieVal = Cookies.get('ACCESS_TOKEN');
+  useEffect(() => {
+    if(!cookieVal){
+      localStorage.setItem('userLoginTrack', JSON.stringify({
+        __isLoggedIn: false,
+        name: '',
+        neech: ''
+      }));
+    }
+    else {
+      if(localStorageItems?.neech === 'Organizer'){
+        navigate("/dashboard/organizer");
+      } else if(localStorageItems?.neech === 'Arena Owner'){
+        navigate("/dashboard/owner");
+      } else if(localStorageItems?.neech === "Participant"){
+        navigate("/dashboard/participant");
+      }
+    }
+    // eslint-disable-next-line
+  }, []);
   return (
     <div className='homePage'>
         <SectionOneHomePage />

@@ -1,0 +1,40 @@
+.logo{
+    width: 70px;
+    object-fit: contain;
+}
+.MuiPaper-root{
+    background-color: #000 !important;
+}
+.MuiButtonBase-root{
+    color: #fff !important;
+}
+
+.dropDownButton{
+    position: relative;
+    padding-right: 20px !important;
+    &::after{
+        content: '';
+        position: absolute;
+        top: 44%;
+        right: 0;
+        border-top: 5px solid #fff;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+    }
+}
+.mobileDrawer{
+    .MuiTypography-root{
+        display: flex;
+        justify-content: flex-start;
+        img{
+            margin: 0px 16px;
+        }
+    }
+    .MuiButtonBase-root{
+        justify-content: flex-start !important;
+        text-align: start !important;
+        .MuiButtonBase-root{
+            padding-left: 0px !important;
+        }
+    }
+}

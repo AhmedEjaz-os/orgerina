@@ -1,21 +1,72 @@
-import { AppBar, Box, IconButton, Toolbar, Typography, Button, Drawer, Divider, ListItem, ListItemButton, ListItemText, List } from '@mui/material'
+import { AppBar, Box, IconButton, Toolbar, Typography, Button, Drawer, Divider, ListItem, ListItemButton, ListItemText, List, Menu, MenuItem } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu';
-
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import '../../assets/css/navbar.scss';
+import { NavLink, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Navbar(props) {
 const { window } = props;
+const navigate = useNavigate();
+const localStorageItems = JSON.parse(localStorage.getItem('userLoginTrack'));
+const cookieVal = Cookies.get('ACCESS_TOKEN');
+useEffect(() => {
+  if(!cookieVal){
+    localStorage.setItem('userLoginTrack', JSON.stringify({
+      __isLoggedIn: false,
+      name: '',
+      neech: ''
+    }));
+  }
+  if(!localStorageItems.__isLoggedIn){
+    navigate('/sign-in');
+  }
+  // eslint-disable-next-line
+}, [])
+
 const drawerWidth = 240;
 const [mobileOpen, setMobileOpen] = useState(false);
-const navItems = ['Home', 'About', 'Contact'];
+let navItems;
+if(localStorageItems.neech === 'Arena Owner'){
+  navItems = ['Dashboard', 'Add Your Arena'];
+}
+else if(localStorageItems.neech === 'Organizer'){
+  navItems = ['Dashboard', 'Add a new competition'];
+}
+else if(localStorageItems.neech === 'Participant'){
+  navItems = ['Dashboard', 'Apply in Competitions'];
+}
+else{
+  navItems = ['', ''];
+}
 const container = window !== undefined ? () => window().document.body : undefined;
 const handleDrawerToggle = () => {
-setMobileOpen((prevState) => !prevState);
+  setMobileOpen((prevState) => !prevState);
 };
+const [anchorEl, setAnchorEl] = React.useState(null);
+const open = Boolean(anchorEl);
+const handleClick = (event) => {
+  setMobileOpen((prevState) => !prevState);
+  setAnchorEl(event.currentTarget);
+};
+const handleClose = () => {
+  setMobileOpen((prevState) => !prevState);
+  setAnchorEl(null);
+};
+const handleLogout = () => {
+  localStorage.setItem('userLoginTrack', JSON.stringify({
+    __isLoggedIn: false,
+    name: '',
+    neech: ''
+  }));
+  Cookies.remove('ACCESS_TOKEN');
+  navigate('/sign-in');
+}
+
 const drawer = (
-<Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+<Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }} className="mobileDrawer">
     <Typography variant="h6" sx={{ my: 2 }}>
-    MUI
+      <img src={process.env.PUBLIC_URL + '/assets/images/navbar/Logo.png'} alt="LOGO" className="logo"  />
     </Typography>
     <Divider />
     <List>
@@ -26,6 +77,20 @@ const drawer = (
         </ListItemButton>
         </ListItem>
     ))}
+        <ListItem disablePadding>
+          <ListItemButton sx={{ textAlign: 'center' }}>
+              <Button
+                id="basic-button"
+                aria-controls={open ? 'basic-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+                className="dropDownButton"
+              >
+                {localStorageItems.name}
+              </Button>
+          </ListItemButton>
+        </ListItem>
     </List>
 </Box>
 );
@@ -47,7 +112,7 @@ const drawer = (
                     component="div"
                     sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
                 >
-                    MUI
+                    <img src={process.env.PUBLIC_URL + '/assets/images/navbar/Logo.png'} alt="logo" className="logo" />
                 </Typography>
                 <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                     {navItems.map((item) => (
@@ -55,9 +120,38 @@ const drawer = (
                         {item}
                     </Button>
                     ))}
+                    <Button
+                      id="basic-button"
+                      aria-controls={open ? 'basic-menu' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? 'true' : undefined}
+                      onClick={handleClick}
+                      className="dropDownButton"
+                    >
+                      {localStorageItems.name}
+                    </Button>
                 </Box>
             </Toolbar>
       </AppBar>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={handleClose}>
+          <NavLink className="text-white text-decoration-none" to='/dashboard/owner/profile'>Profile</NavLink>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <NavLink className="text-white text-decoration-none" to='/dashboard/owner/balance'>My Balance</NavLink>
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          Logout
+        </MenuItem>
+      </Menu>
       <Box component="nav">
         <Drawer
           container={container}

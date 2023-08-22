@@ -2,9 +2,10 @@ import React from 'react';
 import axios from 'axios';
 import { IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-function InputFields({ showPassword, passwordValidationMessage, handleClickShowPassword }) {
+function InputFields({ showPassword, handleClickShowPassword, setErrorForWrongPassword }) {
+  const navigate = useNavigate();
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
@@ -15,12 +16,28 @@ function InputFields({ showPassword, passwordValidationMessage, handleClickShowP
         email: e.target[0].value,
         password: e.target[1].value,
       }
-      axios.post('http://localhost:5000/signIn/', payload)
+      axios.post('http://localhost:5000/signIn/', payload, {
+        withCredentials: true
+      })
       .then((response) => {
-        console.log(response);
+        const {name, neech} = response.data?.documentFromDb;
+        localStorage.setItem('userLoginTrack', JSON.stringify({
+          __isLoggedIn: true,
+          name,
+          neech
+        }));
+        if(neech === 'Organizer'){
+          navigate("/dashboard/organizer");
+        }
+        else if(neech === 'Arena Owner'){
+          navigate("/dashboard/owner");
+        }
+        else if(neech === "Participant"){
+          navigate("/dashboard/participant");
+        }
       })
       .catch((err) => {
-        console.log(err.response?.data.error);
+        setErrorForWrongPassword(err.response?.data.error);
       });
     }
   return (
@@ -29,6 +46,9 @@ function InputFields({ showPassword, passwordValidationMessage, handleClickShowP
         <div className='mt-3 passwordInput'>
             <input type={`${showPassword ? 'text': 'password'}`} className="form-control mt-3 p-3" id="exampleFormControlInput2" placeholder="PASSWORD" />
             <IconButton
+            sx={{
+              color: "#000 !important"
+            }}
             aria-label="toggle password visibility"
             onClick={handleClickShowPassword}
             onMouseDown={handleMouseDownPassword}

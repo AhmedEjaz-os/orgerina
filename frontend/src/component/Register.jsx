@@ -1,16 +1,39 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { Navigate } from "react-router-dom";
 import '../assets/css/signIn.scss';
 import '../assets/css/homePage.scss';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Register() {
+  const navigate = useNavigate();
+  const localStorageItems = JSON.parse(localStorage.getItem('userLoginTrack'));
+  const cookieVal = Cookies.get('ACCESS_TOKEN');
+  useEffect(() => {
+    if(!cookieVal){
+      localStorage.setItem('userLoginTrack', JSON.stringify({
+        __isLoggedIn: false,
+        name: '',
+        neech: ''
+      }));
+    }
+    else {
+      if(localStorageItems?.neech === 'Organizer'){
+        navigate("/dashboard/organizer");
+      } else if(localStorageItems?.neech === 'Arena Owner'){
+        navigate("/dashboard/owner");
+      } else if(localStorageItems?.neech === "Participant"){
+        navigate("/dashboard/participant");
+      }
+    }
+    // eslint-disable-next-line
+  }, []);
   const [showPassword, setShowPassword] = useState(false);
   const [checkIfPasswordMatches, setIfPasswordMatches] = useState(false);
   const [error, setError] = useState('');
@@ -32,18 +55,24 @@ function Register() {
     })
     .then((response) => {
       setError('');
-      if(response.data.neech === 'Organizer'){
-        <Navigate to="/dashboard/organizer" replace={true} />
+      const {name, neech} = response.data;
+      localStorage.setItem('userLoginTrack', JSON.stringify({
+        __isLoggedIn: true,
+        name,
+        neech
+      }))
+      if(response.data?.neech === 'Organizer'){
+        window.location.href = "/dashboard/organizer";
       }
-      else if(response.data.neech === 'Arena Owner'){
-        <Navigate to="/dashboard/owner" replace={true} />
+      else if(response.data?.neech === 'Arena Owner'){
+        window.location.href = "/dashboard/owner";
       }
-      else if(response.data.neech === "Participant"){
-        <Navigate to="/dashboard/participant" replace={true} />
+      else if(response.data?.neech === "Participant"){
+        window.location.href = "/dashboard/participant";
       }
     })
     .catch((err) => {
-      setError(err.response.data.error ? err.response.data.error : err.response.data.includes('"password" with value "password" fails to match the required pattern') ? "password must contain 8 characters, 1 uppercase, 1 lowercase, 1 special character ,and 1 number": err.response.data);
+      setError(err.response.data.error ? err.response.data?.error : err.response.data?.includes('"password" with value "password" fails to match the required pattern') ? "password must contain 8 characters, 1 uppercase, 1 lowercase, 1 special character ,and 1 number": err.response?.data);
     });
   }
 

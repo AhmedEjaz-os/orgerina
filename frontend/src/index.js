@@ -5,8 +5,11 @@ import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import App from './App';
 import SignIn from './component/SignIn';
 import Register from './component/Register';
-import OrganizerDashboard from './component/OrganizerDashboard';
 import './index.scss';
+import DashboardOrganizer from './component/DashboardOrganizer';
+import DashboardOwner from './component/DashboardOwner';
+import DashboardParticipant from './component/DashboardParticipant';
+import PageNotFound from './component/PageNotFound';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -21,9 +24,21 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: "/organizer",
-    element: <OrganizerDashboard />,
+    path: "/dashboard/organizer",
+    element: <DashboardOrganizer />,
   },
+  {
+    path: "/dashboard/owner",
+    element: <DashboardOwner />,
+  },
+  {
+    path: "/dashboard/participant",
+    element: <DashboardParticipant />,
+  },
+  {
+    path: "*",
+    element:<PageNotFound />
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
