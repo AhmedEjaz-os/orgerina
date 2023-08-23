@@ -14,6 +14,7 @@ useEffect(() => {
   if(!cookieVal){
     localStorage.setItem('userLoginTrack', JSON.stringify({
       __isLoggedIn: false,
+      email: '',
       name: '',
       neech: ''
     }));
@@ -56,6 +57,7 @@ const handleClose = () => {
 const handleLogout = () => {
   localStorage.setItem('userLoginTrack', JSON.stringify({
     __isLoggedIn: false,
+    email: '',
     name: '',
     neech: ''
   }));

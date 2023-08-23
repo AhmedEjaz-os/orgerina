@@ -84,7 +84,7 @@ const signInUser = async(req, res) => {
     })
     .then((data) => { return data; });
     if(documentFromDb){
-        await bcrypt.compare(password, documentFromDb.__password, (err, resp) => {
+        await bcrypt.compare(password, documentFromDb.__password, async (err, resp) => {
             if(!resp){
                 res.status(401).json({
                     error: "Email or Password does not match"
@@ -92,14 +92,25 @@ const signInUser = async(req, res) => {
             }
             if(resp){
                 const token = createJsonWebToken({name: documentFromDb.name, email: documentFromDb.email, password: documentFromDb.password, neech: documentFromDb.neech});
-                res.cookie("ACCESS_TOKEN", token, {
-                    maxAge: 86400000,
-                    secure: false,
-                })
-                res.status(200).json({
-                    documentFromDb,
-                    message: "User is signed in..."
-                })
+                let __didItUpdate;
+                try{
+                    __didItUpdate = await model.findOneAndUpdate({email}, {__access_token: token});
+                }
+                catch(e){
+                    res.status(400).json({
+                        err
+                    });
+                }
+                if(__didItUpdate){
+                    res.cookie("ACCESS_TOKEN", token, {
+                        maxAge: 86400000,
+                        secure: false,
+                    })
+                    res.status(200).json({
+                        documentFromDb,
+                        message: "User is signed in..."
+                    })    
+                }
             }
         })
     }

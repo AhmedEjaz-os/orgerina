@@ -14,6 +14,7 @@ function HomePage() {
     if(!cookieVal){
       localStorage.setItem('userLoginTrack', JSON.stringify({
         __isLoggedIn: false,
+        email: '',
         name: '',
         neech: ''
       }));

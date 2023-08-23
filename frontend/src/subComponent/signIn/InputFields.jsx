@@ -3,6 +3,8 @@ import axios from 'axios';
 import { IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { environment } from '../enviroments/developement.enviroment';
+import { prodEnvironment } from '../enviroments/production.environment';
 
 function InputFields({ showPassword, handleClickShowPassword, setErrorForWrongPassword }) {
   const navigate = useNavigate();
@@ -16,13 +18,14 @@ function InputFields({ showPassword, handleClickShowPassword, setErrorForWrongPa
         email: e.target[0].value,
         password: e.target[1].value,
       }
-      axios.post('http://localhost:5000/signIn/', payload, {
+      axios.post(`${process.env.NODE_ENV === "development" ? environment.BACKEND_API_URL : prodEnvironment.BACKEND_API_URL}/signIn/`, payload, {
         withCredentials: true
       })
       .then((response) => {
-        const {name, neech} = response.data?.documentFromDb;
+        const {name, email, neech} = response.data?.documentFromDb;
         localStorage.setItem('userLoginTrack', JSON.stringify({
           __isLoggedIn: true,
+          email,
           name,
           neech
         }));

@@ -10,6 +10,8 @@ import '../assets/css/signIn.scss';
 import '../assets/css/homePage.scss';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { environment } from '../subComponent/enviroments/developement.enviroment';
+import { prodEnvironment } from '../subComponent/enviroments/production.environment';
 
 function Register() {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ function Register() {
     if(!cookieVal){
       localStorage.setItem('userLoginTrack', JSON.stringify({
         __isLoggedIn: false,
+        email: '',
         name: '',
         neech: ''
       }));
@@ -50,14 +53,15 @@ function Register() {
       password: e.target[2].value,
       neech: e.target[5].value
     }
-    axios.post('http://localhost:5000/signIn/createUser', payload, {
+    axios.post(`${process.env.NODE_ENV === "development" ? environment.BACKEND_API_URL : prodEnvironment.BACKEND_API_URL}/signIn/createUser`, payload, {
       withCredentials: true
     })
     .then((response) => {
       setError('');
-      const {name, neech} = response.data;
+      const {name, email, neech} = response.data;
       localStorage.setItem('userLoginTrack', JSON.stringify({
         __isLoggedIn: true,
+        email,
         name,
         neech
       }))
