@@ -1,7 +1,10 @@
 const model = require("../schema/createUserSchema");
 
 const provideUserInfo = async(req, res) => {
-    const headers = (req?.headers?.cookie).split('=')[1];
+    const headers = (req?.headers?.cookie);
+    if(headers){
+        headers = headers.split('=')[1]
+    }
     if(!headers){
         res.status(403).json({
             Error: "YOU ARE NOT AUTHORIZED!!!"
