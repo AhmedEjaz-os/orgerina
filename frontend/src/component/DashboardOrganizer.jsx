@@ -10,7 +10,6 @@ function DashboardOrganizer() {
   const navigate = useNavigate();
   const localStorageItems = JSON.parse(localStorage.getItem('userLoginTrack'));
   const cookieVal = Cookies.get('ACCESS_TOKEN');
-  let getInformation;
   const getUser = async(payload) => {
     await axios.post(`${process.env.NODE_ENV === "development" ? environment.BACKEND_API_URL : prodEnvironment.BACKEND_API_URL}/dashboard/getUserData`, payload, {
       withCredentials: true
@@ -33,17 +32,22 @@ function DashboardOrganizer() {
       navigate('/sign-in');
     }
     else{
-      if(localStorageItems?.neech === 'Organizer'){
-        navigate("/dashboard/organizer");
-      } else if(localStorageItems?.neech === 'Arena Owner'){
-        navigate("/dashboard/owner");
-      } else if(localStorageItems?.neech === "Participant"){
-        navigate("/dashboard/participant");
+      if(localStorageItems?.__isVerifiedEmail){
+        if(localStorageItems?.neech === 'Organizer'){
+          navigate("/dashboard/organizer");
+        } else if(localStorageItems?.neech === 'Arena Owner'){
+          navigate("/dashboard/owner");
+        } else if(localStorageItems?.neech === "Participant"){
+          navigate("/dashboard/participant");
+        }
+        const payload = {
+          email: localStorageItems.email
+        }
+        getUser(payload);
       }
-      const payload = {
-        email: localStorageItems.email
+      else{
+        navigate("/verify-email");
       }
-      getUser(payload)
       
     }
     // eslint-disable-next-line

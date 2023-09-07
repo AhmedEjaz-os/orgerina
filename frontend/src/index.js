@@ -10,6 +10,7 @@ import DashboardOrganizer from './component/DashboardOrganizer';
 import DashboardOwner from './component/DashboardOwner';
 import DashboardParticipant from './component/DashboardParticipant';
 import PageNotFound from './component/PageNotFound';
+import VerifyEmail from './component/VerifyEmail';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard/participant",
     element: <DashboardParticipant />,
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />,
   },
   {
     path: "*",

@@ -18,6 +18,10 @@ const createUserModel = new Schema({
     __access_token: {
         type: String,
         required: true
+    },
+    __email_access_token: {
+        type: String,
+        required: true
     }
 });
 

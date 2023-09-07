@@ -58,21 +58,36 @@ function Register() {
     })
     .then((response) => {
       setError('');
-      const {name, email, neech} = response.data;
-      localStorage.setItem('userLoginTrack', JSON.stringify({
-        __isLoggedIn: true,
-        email,
-        name,
-        neech
-      }))
-      if(response.data?.neech === 'Organizer'){
-        window.location.href = "/dashboard/organizer";
+      const {name, email, neech, __isVerifiedEmail} = response.data.data;
+      console.log(name, email, neech, __isVerifiedEmail)
+      if(__isVerifiedEmail){
+        localStorage.setItem('userLoginTrack', JSON.stringify({
+          __isLoggedIn: true,
+          email,
+          name,
+          neech,
+          __isVerifiedEmail
+        }))
+        if(response.data?.neech === 'Organizer'){
+          window.location.href = "/dashboard/organizer";
+        }
+        else if(response.data?.neech === 'Arena Owner'){
+          window.location.href = "/dashboard/owner";
+        }
+        else if(response.data?.neech === "Participant"){
+          window.location.href = "/dashboard/participant";
+        }
       }
-      else if(response.data?.neech === 'Arena Owner'){
-        window.location.href = "/dashboard/owner";
-      }
-      else if(response.data?.neech === "Participant"){
-        window.location.href = "/dashboard/participant";
+      else{
+        localStorage.setItem('userLoginTrack', JSON.stringify({
+          __isLoggedIn: true,
+          email,
+          name,
+          neech,
+          __isVerifiedEmail
+        }));
+        Cookies.remove('ACCESS_TOKEN');
+        window.location.href = "/verify-email"
       }
     })
     .catch((err) => {

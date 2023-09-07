@@ -2,6 +2,7 @@ const model = require('../schema/createUserSchema.js')
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../mailerService/NodeMailerService.js')
 
 const {
     CreateUserValidationSchema
@@ -30,7 +31,11 @@ const encyptPassword = (password) => {
 }
 
 const createJsonWebToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+}
+
+const createJsonWebTokenVerifyEmail = (user) => {
+    return jwt.sign(user, process.env.EMAIL_VERIFY_TOKEN);
 }
 
 const createUser = async(req, res) => {
@@ -45,13 +50,15 @@ const createUser = async(req, res) => {
     if(result){
         const __encyptedPassword = await encyptPassword(password);
         const token = createJsonWebToken(req.body);
+        const verifyEmailToken = createJsonWebTokenVerifyEmail(req.body);
         var createUser = new model(
             {
                 name,
                 email,
                 __password: __encyptedPassword,
                 neech,
-                __access_token: token
+                __access_token: token,
+                __email_access_token: verifyEmailToken
             }
         );
         await createUser.save()
@@ -59,8 +66,26 @@ const createUser = async(req, res) => {
                 res.cookie("ACCESS_TOKEN", token, {
                     maxAge: 86400000,
                     secure: false,
-                })
-                res.json(data);
+                });
+
+                if(!data.__isVerifiedEmail){
+                    const message = VerifyEmailSenderModule(data.email, data.__email_access_token);
+                    if(message){
+                        res.json({
+                            data,
+                            message: "email sent!!!"
+                        });
+                    }
+                    else{
+                        res.json({
+                            data,
+                            message: "There was a problem send email!!!"
+                        });
+                    }
+                }
+                else{
+                    res.json(data);
+                }
             })
         .catch(e => {
             if(String(e).includes("password` is required")){
@@ -121,9 +146,46 @@ const signInUser = async(req, res) => {
     }
 }
 
+const VerifyEmailSenderModule = async(email, verifyEmailToken) => {
+    const response = sendEmail(email, verifyEmailToken);
+    return response;
+}
+
+const VerifyStatusUpdateModule = async(req, res) => {
+    const {token, email} = req.params;
+    await model.findOne(
+        {email}
+    ).then(async data => {
+        if(data.__isVerifiedEmail === true){
+            res.send("Email Already Verified no need to verify it again");
+        }
+        else{
+            let __EmailVerified;
+            try{
+                __EmailVerified = await model.findOneAndUpdate(
+                    {email, __email_access_token: token},
+                    {__isVerifiedEmail: true}
+                )
+            }
+            catch(e){
+                res.send("Your Verify Link Has Expired Please Click The Latest Link. THANK YOU!");
+            }
+            if(__EmailVerified){
+                const {email, neech} = __EmailVerified;
+                res.json({
+                    email,
+                    neech,
+                    __isVerifiedEmail: true
+                });
+            }
+        }
+    });
+}
+
 module.exports = { 
     signInOwner,
     checkApi,
     createUser,
-    signInUser
+    signInUser,
+    VerifyStatusUpdateModule
 }

@@ -1,7 +1,7 @@
 const model = require("../schema/createUserSchema");
 
 const provideUserInfo = async(req, res) => {
-    const headers = (req?.headers?.cookie);
+    let headers = (req?.headers?.cookie);
     if(headers){
         headers = headers.split('=')[1]
     }
