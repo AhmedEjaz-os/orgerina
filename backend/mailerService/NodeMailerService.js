@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (email, headers) => {
+const sendEmail = async (email, headers, token) => {
 try {
     const transporter = nodemailer.createTransport({
     service: process.env.SERVICE,
@@ -13,7 +13,7 @@ try {
     from: process.env.GMAIL_AUTH_EMAIL,
     to: email,
     subject: "Confirm Your Email",
-    html: HtmlTemplate(email, headers)
+    html: HtmlTemplate(email, headers, token)
     });
 
     return true
@@ -22,7 +22,7 @@ try {
 } 
 };
 
-const HtmlTemplate = (email, headers) => {
+const HtmlTemplate = (email, headers, token) => {
     const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html lang="en" style="height: 100%;">
     <style>
@@ -61,10 +61,8 @@ const HtmlTemplate = (email, headers) => {
             </div>
             <div class="section-2" style="margin: 0px; margin-top: 70px;">
                 <h3 style="font-weight: normal; margin: 0 auto; font-size: 20px; width: fit-content; text-align: center;">Verify your Email to start using your account</h3>
-                <input type="text" value=${headers} style="display: none;" id="tokenInput" />
-                <input type="text" value=${email} style="display: none;" id="emailInput" />
                 <div style="margin: 0 auto; width: fit-content;">
-                    <a href=http://localhost:5000/signIn/email-verification/${headers}/${email} target="_blank"><button style="color: white; background-color: black; padding: 10px 48px; border: none; border-radius: 10px; font-size: 16px; margin-top: 25px; cursor: pointer;">Verify Email</button></a>
+                    <a href=http://localhost:5000/signIn/email-verification/${headers}/${email}/${token} target="_blank"><button style="color: white; background-color: black; padding: 10px 48px; border: none; border-radius: 10px; font-size: 16px; margin-top: 25px; cursor: pointer;">Verify Email</button></a>
                 </div>
             </div>
             <div class="section-3" style="margin-top: 70px; border-top: 1px dashed black;">

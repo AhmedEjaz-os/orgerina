@@ -11,6 +11,8 @@ import DashboardOwner from './component/DashboardOwner';
 import DashboardParticipant from './component/DashboardParticipant';
 import PageNotFound from './component/PageNotFound';
 import VerifyEmail from './component/VerifyEmail';
+import ForgetPassword from './component/ForgetPassword';
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: "/verify-email",
     element: <VerifyEmail />,
+  },
+  {
+    path: "/forget-password",
+    element: <ForgetPassword />,
   },
   {
     path: "*",

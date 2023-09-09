@@ -22,6 +22,7 @@ function DashboardOwner() {
     }
     else{
       if(localStorageItems?.__isVerifiedEmail){
+        Cookies.remove('TEMP_TOKEN');
         if(localStorageItems?.neech === 'Organizer'){
           navigate("/dashboard/organizer");
         } else if(localStorageItems?.neech === 'Arena Owner'){
